@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_management_app/ui/screens/forget_password_email_verify.dart';
 import 'package:task_management_app/ui/widgets/screen_background.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,10 +12,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    void onTabForgotPassword() {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgetPasswordEmailVerify()));
+    }
     return Scaffold(
       body: ScreenBackground(
         child: Padding(
-          padding: const EdgeInsets.all(25.0),
+          padding: const EdgeInsets.all(30.0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -48,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: Column(
                     children: [
-                      TextButton(onPressed: (){},child: Text("Forget Password?")),
+                      TextButton(onPressed: onTabForgotPassword,child: Text("Forget Password?")),
                       RichText(
                         text: TextSpan(
                           text: "Don't have an account? ",
