@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management_app/ui/screens/forget_password_email_verify.dart';
+import 'package:task_management_app/ui/screens/sign_up_screen.dart';
 import 'package:task_management_app/ui/widgets/screen_background.dart';
 
 class LoginPage extends StatefulWidget {
@@ -69,6 +71,9 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
+                              recognizer: TapGestureRecognizer()..onTap = () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpScreen()));
+                              },
                             ),
                           ],
                         ),

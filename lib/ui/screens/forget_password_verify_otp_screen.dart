@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_management_app/ui/screens/reset_password_screen.dart';
 import '../widgets/screen_background.dart';
+
 class ForgetPasswordVerifyOtpScreen extends StatefulWidget {
   const ForgetPasswordVerifyOtpScreen({super.key});
 
   @override
-  State<ForgetPasswordVerifyOtpScreen> createState() => _ForgetPasswordVerifyOtpScreenState();
+  State<ForgetPasswordVerifyOtpScreen> createState() =>
+      _ForgetPasswordVerifyOtpScreenState();
 }
 
-class _ForgetPasswordVerifyOtpScreenState extends State<ForgetPasswordVerifyOtpScreen> {
+class _ForgetPasswordVerifyOtpScreenState
+    extends State<ForgetPasswordVerifyOtpScreen> {
   @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ScreenBackground(child: Padding(
+      body: ScreenBackground(
+        child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -24,10 +29,11 @@ class _ForgetPasswordVerifyOtpScreenState extends State<ForgetPasswordVerifyOtpS
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 10),
-              Text("A 6 digits OTP sent to your email address", style: TextStyle(color: Colors.grey, fontSize: 17),),
+              Text(
+                "A 6 digits OTP sent to your email address",
+                style: TextStyle(color: Colors.grey, fontSize: 17),
+              ),
               const SizedBox(height: 15),
-
-
 
               PinCodeTextField(
                 length: 6,
@@ -44,7 +50,6 @@ class _ForgetPasswordVerifyOtpScreenState extends State<ForgetPasswordVerifyOtpS
                   inactiveFillColor: Colors.white,
                   selectedColor: Colors.greenAccent,
                   inactiveColor: Colors.grey.shade100,
-
                 ),
                 animationDuration: Duration(milliseconds: 300),
                 backgroundColor: Colors.transparent,
@@ -52,14 +57,16 @@ class _ForgetPasswordVerifyOtpScreenState extends State<ForgetPasswordVerifyOtpS
                 appContext: context,
               ),
 
-
-
-
-
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgetPasswordVerifyOtpScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const ResetPasswordScreen(),
+                    ),
+                  );
                 },
                 child: Text("Verify"),
               ),
@@ -86,15 +93,14 @@ class _ForgetPasswordVerifyOtpScreenState extends State<ForgetPasswordVerifyOtpS
                           ),
                         ],
                       ),
-
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
-        ))
+        ),
+      ),
     );
   }
 }
-
