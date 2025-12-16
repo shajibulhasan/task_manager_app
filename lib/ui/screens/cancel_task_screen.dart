@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../widgets/task_card.dart';
 import '../widgets/task_manager_app_bar.dart';
-class ProgressTaskScreen extends StatefulWidget {
-  const ProgressTaskScreen({super.key});
+class CancelTaskScreen extends StatefulWidget {
+  const CancelTaskScreen({super.key});
 
   @override
-  State<ProgressTaskScreen> createState() => _ProgressTaskScreenState();
+  State<CancelTaskScreen> createState() => _CancelTaskScreenState();
 }
 
-class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
+class _CancelTaskScreenState extends State<CancelTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,7 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
         child: ListView.separated(
             itemCount: 10,
             itemBuilder: (context,index){
-              return TaskCard(status: 'Progress', cardColor: Colors.purple,);
+              return TaskCard(status: 'Cancel', cardColor: Colors.red,);
             },
             separatorBuilder: (context,index) => SizedBox(height: 5,)
         ),
