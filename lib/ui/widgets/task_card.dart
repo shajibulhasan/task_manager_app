@@ -11,7 +11,9 @@ class TaskCard extends StatelessWidget {
       child: Card(
         color: Colors.white,
         child: ListTile(
-          title: Text("This is task Title"),
+          title: Text("This is task Title",
+          style: Theme.of(context).textTheme.titleMedium,
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
