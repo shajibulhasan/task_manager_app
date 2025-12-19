@@ -16,7 +16,7 @@ class ApiCaller {
       final int statusCode = response.statusCode;
       final decodedBody = jsonDecode(response.body);
 
-      if (statusCode == 200) {
+      if (statusCode == 200 || statusCode == 201) {
         return ApiResponse(
           statusCode: statusCode,
           body: decodedBody,
@@ -93,7 +93,7 @@ class ApiCaller {
 
 class ApiResponse {
   final int statusCode;
-  final String body;
+  final dynamic body;
   final bool isSuccess;
   final String? errorMessage;
 
@@ -104,5 +104,5 @@ class ApiResponse {
           required this.body,
           required this.isSuccess,
     }
-      );
-    }
+    );
+}
