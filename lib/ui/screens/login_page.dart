@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_management_app/data/models/user_model.dart';
 import 'package:task_management_app/ui/screens/forget_password_email_verify.dart';
 import 'package:task_management_app/ui/screens/main_nav_bar_holder_screen.dart';
 import 'package:task_management_app/ui/screens/sign_up_screen.dart';
@@ -7,6 +8,7 @@ import 'package:task_management_app/ui/widgets/screen_background.dart';
 
 import '../../data/servies/api_caller.dart';
 import '../../data/utils/urls.dart';
+import '../controller/auth_controller.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -145,6 +147,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _signInProgress = false);
 
     if(response.isSuccess){
+      UserModel model = UserModel.fromJson(response.body['data']);
+      String accessToken = response.body['token'];
+      await AuthController.saveUserData(model, accessToken);
       _clearControllers();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login Successful'),
@@ -152,6 +157,7 @@ class _LoginPageState extends State<LoginPage> {
           duration: Duration(seconds: 5),
         ),
       );
+
       Navigator.push(context, MaterialPageRoute(builder: (context) => const MainNavBarHolderScreen()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
