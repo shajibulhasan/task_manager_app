@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+
+import '../../app.dart';
+import '../../ui/controller/auth_controller.dart';
 
 class ApiCaller {
 
@@ -11,7 +15,9 @@ class ApiCaller {
     try {
       Uri uri = Uri.parse(url);
       logRequest(url);
-      Response response = await get(uri);
+      Response response = await get(uri, headers: {
+        'token' : AuthController.accessToken ?? ''
+      });
       logResponse(url, response);
       final int statusCode = response.statusCode;
       final decodedBody = jsonDecode(response.body);
@@ -22,7 +28,14 @@ class ApiCaller {
           body: decodedBody,
           isSuccess: true,
         );
-      } else {
+      } else if(statusCode == 401){
+        await moveToLogin();
+        return ApiResponse(
+          statusCode: -1,
+          body: '',
+          isSuccess: false,
+        );
+      }else {
         return ApiResponse(
           statusCode: statusCode,
           body: decodedBody,
@@ -47,6 +60,7 @@ class ApiCaller {
           headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+            'token' : AuthController.accessToken ?? ''
           },
           body: body != null ? jsonEncode(body) : null
       );
@@ -60,7 +74,15 @@ class ApiCaller {
           body: decodedBody,
           isSuccess: true,
         );
-      } else {
+      } else if(statusCode == 401){
+        await moveToLogin();
+        return ApiResponse(
+          statusCode: -1,
+          body: '',
+          isSuccess: false,
+        );
+      }
+      else {
         return ApiResponse(
           statusCode: statusCode,
           body: decodedBody,
@@ -88,8 +110,12 @@ class ApiCaller {
     logger.i('API Response Body: ${response.body}');
 
   }
-
+ static Future<void> moveToLogin() async {
+    await AuthController.clearUserData();
+    Navigator.pushNamedAndRemoveUntil(TaskManagerApp.navigator.currentContext!, '/login', (route) => false);
+ }
 }
+
 
 class ApiResponse {
   final int statusCode;
