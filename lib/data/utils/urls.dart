@@ -3,4 +3,10 @@ class Urls{
   static String registrationUrl = '$baseUrl/Registration';
   static String loginUrl = '$baseUrl/Login';
   static String createTask = '$baseUrl/createTask';
+  static String taskCount = '$baseUrl/taskStatusCount';
+  static String completeTask = '$baseUrl/listTaskByStatus/Completed';
+  static String newTask = '$baseUrl/listTaskByStatus/New';
+  static String progressTask = '$baseUrl/listTaskByStatus/Progress';
+  static String deleteTaskUrl(String taskId) => '$baseUrl/deleteTask/$taskId';
+  static String changeStatus(String taskId,String status) => '$baseUrl/updateTaskStatus/$taskId/$status';
 }
