@@ -8,6 +8,7 @@ class Urls{
   static String completeTask = '$baseUrl/listTaskByStatus/Completed';
   static String cancelledTask = '$baseUrl/listTaskByStatus/Cancelled';
   static String progressTask = '$baseUrl/listTaskByStatus/Progress';
+  static String updateProfile = '$baseUrl/ProfileUpdate';
   static String deleteTaskUrl(String taskId) => '$baseUrl/deleteTask/$taskId';
   static String changeStatus(String taskId,String status) => '$baseUrl/updateTaskStatus/$taskId/$status';
 }

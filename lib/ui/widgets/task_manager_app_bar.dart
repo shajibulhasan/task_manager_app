@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:task_management_app/ui/controller/auth_controller.dart';
 import 'package:task_management_app/ui/screens/update_profile_screen.dart';
@@ -9,6 +11,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profilePhoto = AuthController.userModel!.photo;
     return AppBar(
       backgroundColor: Colors.green,
       title: InkWell(
@@ -17,14 +20,16 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
         child: Row(
           children: [
-            const CircleAvatar(),
+            CircleAvatar(
+              child: profilePhoto.isNotEmpty ? Image.memory(jsonDecode(profilePhoto)) : Icon(Icons.person),
+            ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Soaib",
+                  AuthController.userModel!.firstName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -32,7 +37,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
         
                 Text(
-                  "abc@gmail.com",
+                  AuthController.userModel!.email,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
