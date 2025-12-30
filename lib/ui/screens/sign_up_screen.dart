@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_management_app/data/servies/api_caller.dart';
 import 'package:task_management_app/data/utils/urls.dart';
 import 'package:task_management_app/ui/widgets/screen_background.dart';
 
+import '../../providers/network_provider.dart';
 import 'login_page.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -32,39 +34,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
   Future<void> _signUp() async {
-      setState(() => _signUpInProgress = true);
-      Map<String, dynamic> signUpData = {
-        'email': _emailController.text.trim(),
-        'firstName': _firstNameController.text.trim(),
-        'lastName': _lastNameController.text.trim(),
-        'mobile': _mobileNumberController.text.trim(),
-        'password': _passwordController.text.trim(),
-      };
-      final ApiResponse response = await ApiCaller.postResponse(
-          url: Urls.registrationUrl,
-          body: signUpData,
+      final  networkProvider = Provider.of<NetworkProvider>(context, listen: false);
+      final result = networkProvider.register(
+          email: _emailController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          mobile: _mobileNumberController.text.trim(),
+          password: _passwordController.text,
       );
 
-      setState(() => _signUpInProgress = false);
-
-      if(response.isSuccess){
+      if(await result != null){
         _clearControllers();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration Successful'),
-          backgroundColor: Colors.green,
+            backgroundColor: Colors.green,
             duration: Duration(seconds: 5),
           ),
         );
-      } else {
+        Navigator.pop(context);
+      }else{
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration Failed: ${response.body['body']}'),
-          backgroundColor: Colors.red,
+          SnackBar(content: Text(networkProvider.errorMessage ?? 'Registration Failed'),
+            backgroundColor: Colors.red,
             duration: Duration(seconds: 5),
           ),
         );
       }
-
-
   }
 
   @override

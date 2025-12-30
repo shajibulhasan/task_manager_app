@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_management_app/data/models/user_model.dart';
 import 'package:task_management_app/ui/screens/forget_password_email_verify.dart';
 import 'package:task_management_app/ui/screens/main_nav_bar_holder_screen.dart';
@@ -8,6 +9,8 @@ import 'package:task_management_app/ui/widgets/screen_background.dart';
 
 import '../../data/servies/api_caller.dart';
 import '../../data/utils/urls.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/network_provider.dart';
 import '../controller/auth_controller.dart';
 
 class LoginPage extends StatefulWidget {
@@ -135,21 +138,25 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Future<void> _signIn() async {
-    Map<String, dynamic> signUpData = {
-      'email': _emailController.text.trim(),
-      'password': _passwordController.text.trim(),
-    };
-    final ApiResponse response = await ApiCaller.postResponse(
-      url: Urls.loginUrl,
-      body: signUpData,
-    );
 
-    setState(() => _signInProgress = false);
+    final networkProvider = Provider.of<NetworkProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    if(response.isSuccess){
-      UserModel model = UserModel.fromJson(response.body['data']);
-      String accessToken = response.body['token'];
-      await AuthController.saveUserData(model, accessToken);
+    final result = await networkProvider.login(email: _emailController.text.trim(), password: _passwordController.text);
+
+    // Map<String, dynamic> signUpData = {
+    //   'email': _emailController.text.trim(),
+    //   'password': _passwordController.text.trim(),
+    // };
+    // final ApiResponse response = await ApiCaller.postResponse(
+    //   url: Urls.loginUrl,
+    //   body: signUpData,
+    // );
+    //
+    // setState(() => _signInProgress = false);
+
+    if(result != null){
+      await authProvider.saveUserData(result['user'], result['token']);
       _clearControllers();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login Successful'),
@@ -158,10 +165,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const MainNavBarHolderScreen()));
-    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainNavBarHolderScreen()));
+    }else{
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.body['data'] ?? 'Login Failed'),
+        SnackBar(content: Text(networkProvider.errorMessage ?? 'Login Failed'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 5),
         ),
