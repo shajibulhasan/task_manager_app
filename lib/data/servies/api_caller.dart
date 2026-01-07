@@ -3,132 +3,132 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 import '../../app.dart';
+import '../../providers/auth_provider.dart';
 import '../../ui/controller/auth_controller.dart';
 
 class ApiCaller {
-
-  static Logger logger = Logger();
-
-  static Future<ApiResponse> getResponse({required String url}) async {
+  static final Logger _logger = Logger();
+  static String ? accessToken;
+  static Future<ApiResponse> getRequest({required String url}) async {
     try {
       Uri uri = Uri.parse(url);
-      logRequest(url);
-      Response response = await get(uri, headers: {
-        'token' : AuthController.accessToken ?? ''
+      _logRequest(url);
+      Response response = await get(uri,headers: {
+        'token' : accessToken ?? ''
       });
-      logResponse(url, response);
+      _logResponse(url, response);
       final int statusCode = response.statusCode;
-      final decodedBody = jsonDecode(response.body);
-
-      if (statusCode == 200 || statusCode == 201) {
+      final decodedData = jsonDecode(response.body);
+      if (statusCode == 200) {
         return ApiResponse(
-          statusCode: statusCode,
-          body: decodedBody,
-          isSuccess: true,
-        );
+            responseCode: statusCode,
+            isSuccess: true,
+            responseData: decodedData);
       } else if(statusCode == 401){
-        await moveToLogin();
+        await _movetoLogin();
         return ApiResponse(
-          statusCode: -1,
-          body: '',
-          isSuccess: false,
-        );
+            responseCode: -1,
+            isSuccess: false,
+            responseData: null);
       }else {
         return ApiResponse(
-          statusCode: statusCode,
-          body: decodedBody,
-          isSuccess: false,
-        );
+            responseCode: statusCode,
+            isSuccess: false,
+            responseData: decodedData);
       }
     } catch (e) {
       return ApiResponse(
-        statusCode: -1,
-        body: '',
-        isSuccess: false,
-        errorMessage: e.toString(),
-      );
+          responseCode: -1,
+          isSuccess: false,
+          responseData: null,
+          errorMessage: e.toString());
     }
   }
 
-  static Future<ApiResponse> postResponse({required String url, Map<String,dynamic>?body}) async {
+  static Future<ApiResponse> postRequest(
+      {required String url, Map<String, dynamic>? body}) async {
     try {
-      logRequest(url, body: body);
+      _logRequest(url, body: body);
       Uri uri = Uri.parse(url);
-      Response response = await post(uri,
-          headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            'token' : AuthController.accessToken ?? ''
-          },
-          body: body != null ? jsonEncode(body) : null
+      Response response = await post(
+        uri,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          'token' :accessToken ?? ''
+        },
+        body: body != null ? jsonEncode(body) : null,
       );
-      logResponse(url, response);
-      final int statusCode = response.statusCode;
-      final decodedBody = jsonDecode(response.body);
+      _logResponse(url, response);
 
+      final int statusCode = response.statusCode;
+      final decodedData = jsonDecode(response.body);
       if (statusCode == 200 || statusCode == 201) {
         return ApiResponse(
-          statusCode: statusCode,
-          body: decodedBody,
-          isSuccess: true,
-        );
-      } else if(statusCode == 401){
-        await moveToLogin();
+            responseCode: statusCode,
+            isSuccess: true,
+            responseData: decodedData);
+      }else if(statusCode == 401){
+        await _movetoLogin();
         return ApiResponse(
-          statusCode: -1,
-          body: '',
-          isSuccess: false,
-        );
-      }
-      else {
+            responseCode: -1,
+            isSuccess: false,
+            responseData: null);
+      } else {
         return ApiResponse(
-          statusCode: statusCode,
-          body: decodedBody,
-          isSuccess: false,
-        );
+            responseCode: statusCode,
+            isSuccess: false,
+            responseData: decodedData);
       }
     } catch (e) {
       return ApiResponse(
-        statusCode: -1,
-        body: '',
-        isSuccess: false,
-        errorMessage: e.toString(),
-      );
-    }
-  }
-  static void logRequest(String url, {Map<String,dynamic>? body}) {
-    logger.i('API Request: $url');
-    if (body != null) {
-      logger.i('Request Body: ${jsonEncode(body)}');
+          responseCode: -1,
+          isSuccess: false,
+          responseData: null,
+          errorMessage: e.toString());
     }
   }
 
-  static void logResponse(String url , Response response) {
-    logger.i('API Response Status Code: ${response.statusCode}');
-    logger.i('API Response Body: ${response.body}');
-
+  static void _logRequest(String Url, {Map<String, dynamic>? body}) {
+    _logger.i(
+      'URL => $Url\n'
+          'Request Body => $body\n',
+    );
   }
- static Future<void> moveToLogin() async {
+
+  static void _logResponse(String Url, Response response) {
+    _logger.i(
+      'URL => $Url\n'
+          'Status code => ${response.statusCode}\n'
+          'Response Boy => ${response.body}\n',
+    );
+  }
+
+  static Future<void>_movetoLogin() async {
     await AuthController.clearUserData();
-    Navigator.pushNamedAndRemoveUntil(TaskManagerApp.navigator.currentContext!, '/login', (route) => false);
- }
+    Navigator.pushNamedAndRemoveUntil(TaskManagerApp.navigator.currentContext!, '/Login', (predicate)=>false);
+
+  }
 }
 
 
+
+// API response
+//     -> body
+//     -> code
+
 class ApiResponse {
-  final int statusCode;
-  final dynamic body;
+  final int responseCode;
+  final dynamic responseData;
   final bool isSuccess;
   final String? errorMessage;
 
   ApiResponse(
-    {
-          this.errorMessage = 'Something went wrong',
-          required this.statusCode,
-          required this.body,
-          required this.isSuccess,
-    }
-    );
+      {required this.responseCode,
+        required this.isSuccess,
+        required this.responseData,
+        this.errorMessage = 'Something wrong'});
 }

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../data/models/task_model.dart';
-import '../../data/servies/api_caller.dart';
-import '../../data/utils/urls.dart';
-import '../widgets/snack_bar.dart';
+import 'package:provider/provider.dart';
+import '../../providers/task_provider.dart';
 import '../widgets/task_card.dart';
 import '../widgets/task_manager_app_bar.dart';
 class CancelTaskScreen extends StatefulWidget {
@@ -16,35 +13,19 @@ class CancelTaskScreen extends StatefulWidget {
 class _CancelTaskScreenState extends State<CancelTaskScreen> {
 
 
-  bool _getCancelledTaskCountProgress = false;
-
-  List<TaskModel> _CancelledTaskList = [];
-
-  Future<void> getAllCancelledTask() async {
-    _getCancelledTaskCountProgress = true;
-    setState(() {});
-
-    final ApiResponse response = await ApiCaller.getResponse(
-      url: Urls.cancelledTask,
-    );
-
-    _getCancelledTaskCountProgress = false;
-    setState(() {});
-    List<TaskModel> list = [];
-    if (response.isSuccess) {
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.fromJson(jsonData));
-      }
-    }else{
-      showSnackBar(context, response.errorMessage.toString(), Colors.red);
-    }
-    _CancelledTaskList = list;
-  }
 
   @override
   void initState() {
     super.initState();
-    getAllCancelledTask();
+    loadData();
+  }
+
+  Future <void> loadData()async {
+    final taskProvider = Provider.of<TaskProvider>(context,listen: false);
+    Future.wait([
+      taskProvider.fetchNewTaskByStatus('Cancelled'),
+    ]);
+
   }
 
 
@@ -52,19 +33,29 @@ class _CancelTaskScreenState extends State<CancelTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TaskManagerAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-            itemCount: _CancelledTaskList.length,
-            itemBuilder: (context,index){
-              return TaskCard(
-                taskModel: _CancelledTaskList[index],
-                cardColor: Colors.red,
-                refreshParent: (){},
-              );
-            },
-            separatorBuilder: (context,index) => SizedBox(height: 5,)
-        ),
+      body: Consumer<TaskProvider>(
+          builder: (context,taskProvider,child){
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: ListView.separated(
+                itemCount: taskProvider.cancelledTasks.length,
+                itemBuilder: (context, index) {
+                  return TaskCard(
+                    taskModel: taskProvider.cancelledTasks[index],
+                    cardColor: Colors.blue,
+                    refreshParent: (){
+                      loadData();
+                    },
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    height: 4,
+                  );
+                },
+              ),
+            );
+          }
       ),
     );
   }

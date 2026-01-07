@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_management_app/providers/auth_provider.dart';
 import 'package:task_management_app/providers/network_provider.dart';
+import 'package:task_management_app/providers/task_provider.dart';
 import 'app.dart';
 
 void main() {
@@ -10,6 +11,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<TaskProvider>(create: (_) => TaskProvider()),
+
         ChangeNotifierProvider<NetworkProvider>(
           create: (_) => NetworkProvider(),
         ),
