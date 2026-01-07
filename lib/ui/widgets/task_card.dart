@@ -27,7 +27,7 @@ class _TaskCardState extends State<TaskCard> {
 
   Future<void> _changeStatus(String status) async {
     _changeStatusInProgress = true;
-    final ApiResponse response = await ApiCaller.getResponse(
+    final ApiResponse response = await ApiCaller.getRequest(
       url: Urls.changeStatus(widget.taskModel.id, status),
     );
 
@@ -45,7 +45,7 @@ class _TaskCardState extends State<TaskCard> {
   Future<void> deleteTask() async {
     _isDelete = true;
     setState(() {});
-    final ApiResponse response = await ApiCaller.getResponse(
+    final ApiResponse response = await ApiCaller.getRequest(
       url: Urls.deleteTaskUrl(widget.taskModel.id),
     );
     _isDelete = false;

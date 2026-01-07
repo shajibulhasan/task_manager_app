@@ -183,7 +183,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       requestBody['photo'] = encodedImage;
     }
 
-    final ApiResponse response = await ApiCaller.postResponse(
+    final ApiResponse response = await ApiCaller.postRequest(
       url: Urls.updateProfile,
       body: requestBody,
     );

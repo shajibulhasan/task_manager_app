@@ -16,8 +16,8 @@ class AuthProvider extends ChangeNotifier {
   UserModel ? get userModel => _userModel;
   ApiState ? get authState => _authState;
   bool get isLoggedIn => _accessToken != null;
-  static String _accessTokenKey = 'token';
-  static String _userModelKey = 'user-data';
+  String _accessTokenKey = 'token';
+  String _userModelKey = 'user-data';
 
 
 

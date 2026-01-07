@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_management_app/ui/widgets/task_card.dart';
 import 'package:task_management_app/ui/widgets/task_manager_app_bar.dart';
+import '../../providers/task_provider.dart';
 
-import '../../data/models/task_model.dart';
-import '../../data/servies/api_caller.dart';
-import '../../data/utils/urls.dart';
-import '../widgets/snack_bar.dart';
 class CompletedTaskScreen extends StatefulWidget {
   const CompletedTaskScreen({super.key});
 
@@ -14,56 +12,42 @@ class CompletedTaskScreen extends StatefulWidget {
 }
 
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
-
-  bool _getCompleteTaskCountProgress = false;
-
-  List<TaskModel> _completeTaskList = [];
-
-  Future<void> getAllCompleteTask() async {
-    _getCompleteTaskCountProgress = true;
-    setState(() {});
-
-    final ApiResponse response = await ApiCaller.getResponse(
-      url: Urls.completeTask,
-    );
-
-    _getCompleteTaskCountProgress = false;
-    setState(() {});
-    List<TaskModel> list = [];
-    if (response.isSuccess) {
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.fromJson(jsonData));
-      }
-    }else{
-      showSnackBar(context, response.errorMessage.toString(), Colors.red);
-    }
-    _completeTaskList = list;
-  }
-
   @override
   void initState() {
     super.initState();
-    getAllCompleteTask();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    Future.wait([taskProvider.fetchNewTaskByStatus('Completed')]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TaskManagerAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-            itemCount: _completeTaskList.length,
-            itemBuilder: (context,index){
-              Text('');
-              return TaskCard(
-                taskModel: _completeTaskList[index],
-                cardColor: Colors.green,
-                refreshParent: (){},
-              );
-            },
-            separatorBuilder: (context,index) => SizedBox(height: 5,)
-        ),
+      body: Consumer<TaskProvider>(
+        builder: (context, taskProvider, child) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: ListView.separated(
+              itemCount: taskProvider.completedTasks.length,
+              itemBuilder: (context, index) {
+                return TaskCard(
+                  taskModel: taskProvider.completedTasks[index],
+                  cardColor: Colors.blue,
+                  refreshParent: () {
+                    loadData();
+                  },
+                );
+              },
+              separatorBuilder: (context, index) {
+                return SizedBox(height: 4);
+              },
+            ),
+          );
+        },
       ),
     );
   }

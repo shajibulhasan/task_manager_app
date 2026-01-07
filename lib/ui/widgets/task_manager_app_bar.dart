@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_management_app/ui/controller/auth_controller.dart';
 import 'package:task_management_app/ui/screens/update_profile_screen.dart';
-import 'package:task_management_app/ui/screens/update_profile_screen.dart';
+import 'package:task_management_app/providers/auth_provider.dart';
 class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TaskManagerAppBar({
     super.key,
@@ -11,7 +12,9 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profilePhoto = AuthController.userModel!.photo;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userModel = authProvider.userModel;
+    final String profilePhoto = userModel?.photo ?? '';
     return AppBar(
       backgroundColor: Colors.green,
       title: InkWell(
@@ -29,7 +32,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AuthController.userModel!.firstName,
+                  userModel!.firstName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -37,7 +40,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
         
                 Text(
-                  AuthController.userModel!.email,
+                  userModel.email,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -51,7 +54,7 @@ class TaskManagerAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () {
-            AuthController.clearUserData();
+            authProvider.logout();
             Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
           },
           icon: const Icon(Icons.logout),
